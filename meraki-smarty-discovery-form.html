@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MERAKI SMARTY — Project Discovery Questionnaire</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-alt: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #059669;
+      --accent-soft: #ecfdf5;
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      padding: 24px 16px 80px;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* Sticky Progress Bar */
+    .progress-wrap {
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+
+    .progress-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), #0ea5e9);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    /* Hero Card */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      border-radius: var(--radius);
+      padding: 34px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .badge-top {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 {
+      font-size: 1.8rem;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: 0.98rem;
+      max-width: 650px;
+    }
+
+    .hero-meta {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.84rem;
+      color: #e2e8f0;
+    }
+
+    .hero-meta span {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+
+    /* Section Card */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+
+    .section-header p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* Question Block */
+    .question {
+      margin-bottom: 26px;
+    }
+
+    .question:last-child {
+      margin-bottom: 0;
+    }
+
+    .q-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .q-hint {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Radio & Checkbox Cards */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-alt);
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .option-item:hover {
+      border-color: #93c5fd;
+      background: #f8fbff;
+    }
+
+    .option-item input {
+      margin-top: 3px;
+      accent-color: var(--primary);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .option-item:has(input:checked) {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .option-text {
+      flex: 1;
+      font-size: 0.94rem;
+    }
+
+    .rec-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid #a7f3d0;
+      vertical-align: middle;
+    }
+
+    .option-sub {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Inputs */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.94rem;
+      color: var(--text);
+      background: #ffffff;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="email"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .inline-extra {
+      margin-top: 10px;
+    }
+
+    /* Info Callout */
+    .callout {
+      background: var(--warning-soft);
+      border: 1px solid var(--warning-border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: 0.88rem;
+      color: #78350f;
+      margin-top: 12px;
+    }
+
+    /* Submit & Output Panel */
+    .submit-card {
+      background: var(--surface);
+      border: 1.5px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .submit-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+    }
+
+    .submit-card p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.15s ease, box-shadow 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-whatsapp {
+      background: #16a34a;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.22);
+    }
+
+    .btn-whatsapp:hover {
+      background: #15803d;
+    }
+
+    .btn-secondary {
+      background: var(--surface-alt);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    #summaryBox {
+      display: none;
+      margin-top: 22px;
+      text-align: left;
+    }
+
+    #summaryPreview {
+      width: 100%;
+      min-height: 240px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.84rem;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 10px;
+      border: none;
+      line-height: 1.5;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      z-index: 50;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 24px 20px;
+      }
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .section-card {
+        padding: 20px 18px;
+      }
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sticky Progress -->
+    <div class="progress-wrap">
+      <span class="progress-label" id="progressText">0 / 15 answered</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="hero">
+      <div class="badge-top">MERAKI SMARTY • Phase 1 Kickoff</div>
+      <h1>AI Language App — Director Discovery Form</h1>
+      <p>
+        Please take 3–5 minutes to confirm these practical details for Month 1. We have marked our recommended
+        cost-saving options in green—simply adjust anything you prefer differently, then send your answers in one click.
+      </p>
+      <div class="hero-meta">
+        <span>📱 Mobile App (Students) + Web Portal (Director)</span>
+        <span>🎯 Adaptive A1–C2 Test + PDF Voice Tutor</span>
+        <span>💰 Designed for Minimal API Cost</span>
+      </div>
+    </header>
+
+    <form id="discoveryForm">
+      <!-- School Info -->
+      <section class="section-card">
+        <div class="section-header">
+          <div class="section-num">0</div>
+          <div>
+            <h2>School Overview</h2>
+            <p>Basic details so we can configure your dashboard and cost limits accurately.</p>
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="question">
+            <label class="field-label" for="schoolName">School / Center Name</label>
+            <input type="text" id="schoolName" name="schoolName" placeholder="e.g., Meraki Language Academy" />
+          </div>
+          <div class="question">
+            <label class="field-label" for="studentCount">Approx. Active Students</label>
+            <input type="number" id="studentCount" name="studentCount" min="1" placeholder="e.g., 500" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Accounts, Classes & Privacy -->
+      <section class="section-card">
+        <div class="section-header">
+          <div class="section-num">1</div>
+          <div>
+            <h2>Student Accounts, Classes &amp; Privacy</h2>
+            <p>How students join the app and how elementary learners are protected.</p>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">1. Who should create student accounts?</div>
+          <div class="q-hint">Controlling access prevents outsiders from using your school's AI credits.</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="accountCreation" value="Admin/School creates & imports accounts (Recommended)" checked />
+              <div class="option-text">
+                School / Admin creates or imports student accounts <span class="rec-tag">Recommended</span>
+                <span class="option-sub">Strict budget protection—only enrolled students can log in.</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="accountCreation" value="Students sign up using a private School/Class Invite Code" />
+              <div class="option-text">
+                Students sign up themselves using a private School / Class Invite Code
+                <span class="option-sub">Faster onboarding while still blocking strangers.</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="accountCreation" value="Open public signup with any email/password" />
+              <div class="option-text">
+                Open public signup with any email and password
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">2. How should students be organized in your Director Dashboard?</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="classOrg" value="Grouped by Grade & Class (e.g., Grade 5 - Group A) (Recommended)" checked />
+              <div class="option-text">
+                Grouped by Grade &amp; Class (e.g., <em>Grade 5 – Group A</em>) <span class="rec-tag">Recommended</span>
+                <span class="option-sub">Lets you filter reports and assign PDFs to specific classes.</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="classOrg" value="Grouped by CEFR Level only (A1 to C2)" />
+              <div class="option-text">
+                Grouped by CEFR Level only (A1 to C2)
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="classOrg" value="One single searchable list of all students" />
+              <div class="option-text">
+                One single searchable list of all students
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">3. Voice recording privacy (especially for Elementary ages 6–11)</div>
+          <div class="q-hint">What should happen to raw audio recordings after the AI grades pronunciation?</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="audioRetention" value="Delete raw audio immediately after grading; keep scores & transcripts only (Recommended)" checked />
+              <div class="option-text">
+                Delete raw audio immediately after grading; keep scores &amp; text transcripts only <span class="rec-tag">Recommended</span>
+                <span class="option-sub">Best for child privacy and keeps cloud storage costs near $0.</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="audioRetention" value="Keep audio recordings for 30 days so teachers can listen" />
+              <div class="option-text">
+                Keep audio recordings for 30 days so teachers can replay them
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="audioRetention" value="Keep audio recordings permanently" />
+              <div class="option-text">
+                Keep audio recordings permanently
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">4. Which student age groups will use the app? (Select all that apply)</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="checkbox" name="ageGroups" value="Elementary (Ages 6-11)" checked />
+              <div class="option-text">Elementary School (Ages 6–11)</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="ageGroups" value="Middle School (Ages 12-14)" checked />
+              <div class="option-text">Middle School (Ages 12–14)</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="ageGroups" value="High School (Ages 15-18)" checked />
+              <div class="option-text">High School (Ages 15–18)</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="ageGroups" value="University / Adults (18+)" />
+              <div class="option-text">University / Adult Learners (18+)</div>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Task 1 Placement Test -->
+      <section class="section-card">
+        <div class="section-header">
+          <div class="section-num">2</div>
+          <div>
+            <h2>Task 1: Adaptive Placement Test (A1 → C2)</h2>
+            <p>Listening, Reading, Writing, and Speaking progressive evaluation.</p>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">5. Stopping rule &amp; questions per CEFR level</div>
+          <div class="q-hint">Every student starts at A1 per skill and moves up until they hit the mistake limit.</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="testRule" value="4 questions per level; stop that skill after 2 mistakes (Recommended)" checked />
+              <div class="option-text">
+                4 questions per level — stop that skill after 2 mistakes <span class="rec-tag">Recommended</span>
+                <span class="option-sub">Accurate placement without making the test exhausting (~15–20 min total).</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="testRule" value="5 questions per level; stop that skill after 2 mistakes" />
+              <div class="option-text">
+                5 questions per level — stop that skill after 2 mistakes
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="testRule" value="Custom rule (see note below)" />
+              <div class="option-text">
+                Different rule (please specify below)
+              </div>
+            </label>
+          </div>
+          <div class="inline-extra">
+            <input type="text" name="testRuleCustom" placeholder="Optional: specify custom question count or mistake cutoff..." />
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">6. How often should a student be allowed to retake the Placement Test?</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="retakePolicy" value="Once every 3 months / per term (Recommended)" checked />
+              <div class="option-text">
+                Once every 3 months (per term) <span class="rec-tag">Recommended</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="retakePolicy" value="Once per month" />
+              <div class="option-text">
+                Once per month
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="retakePolicy" value="Only when manually unlocked by Director / Teacher" />
+              <div class="option-text">
+                Only when manually unlocked by the Director / Teacher
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">7. How should final student reports be delivered? (Select all that apply)</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="checkbox" name="reportFormat" value="Director Web Dashboard (Detailed scores + mistake history)" checked />
+              <div class="option-text">Inside the Director Web Dashboard (CEFR breakdown, pronunciation &amp; mistake history)</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="reportFormat" value="Student Mobile App (Summary card)" checked />
+              <div class="option-text">Inside the Student Mobile App (student-friendly level summary)</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="reportFormat" value="Downloadable PDF Report / Certificate for parents" />
+              <div class="option-text">Downloadable PDF Report / Certificate to print or send to parents</div>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Task 2 PDF Voice Tutor -->
+      <section class="section-card">
+        <div class="section-header">
+          <div class="section-num">3</div>
+          <div>
+            <h2>Task 2: PDF Subject Role-Play Tutor</h2>
+            <p>Guided voice conversations with live corrections and off-topic guardrails.</p>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">8. When a beginner (Elementary / A1) makes a mistake, what language should the AI use to explain?</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="beginnerHints" value="Simple English only (Full immersion - Recommended)" checked />
+              <div class="option-text">
+                Simple English only (Full immersion) <span class="rec-tag">Recommended</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="beginnerHints" value="Simple English with brief Arabic hints when stuck" />
+              <div class="option-text">
+                Simple English with brief Arabic hints if the student is stuck
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="beginnerHints" value="Simple English with brief French hints when stuck" />
+              <div class="option-text">
+                Simple English with brief French hints if the student is stuck
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="beginnerHints" value="Let Admin choose per lesson" />
+              <div class="option-text">
+                Let the Admin choose per uploaded lesson
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">9. Which lesson PDFs should each student see?</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="lessonAccess" value="Only PDFs assigned to their Grade / Class (Recommended)" checked />
+              <div class="option-text">
+                Only PDFs assigned to their specific Grade / Class <span class="rec-tag">Recommended</span>
+                <span class="option-sub">Keeps young kids out of high-school material and maximizes caching savings.</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="lessonAccess" value="All uploaded school PDFs are open to all students" />
+              <div class="option-text">
+                All uploaded school PDFs are open to every student
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">10. Weekly AI tutoring quota per student (Budget Guardrail)</div>
+          <div class="q-hint">Sets a fair weekly cap so monthly API bills stay predictable.</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="weeklyQuota" value="2-3 sessions/week (~5-7 min each) - Est. $0.11-$0.16/student/mo (Recommended)" checked />
+              <div class="option-text">
+                2–3 tutoring sessions per week (~5–7 min each) <span class="rec-tag">Recommended</span>
+                <span class="option-sub">Ultra-low cost (~$0.11–$0.16 per student/month with Smart Hybrid Voice).</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="weeklyQuota" value="4-5 sessions/week" />
+              <div class="option-text">
+                4–5 tutoring sessions per week
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="weeklyQuota" value="Configurable per class from Director Dashboard" />
+              <div class="option-text">
+                Make it configurable per class inside the Director Dashboard
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">11. Real Lesson PDF Samples</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="samplePdfs" value="Yes, I will send 2-3 sample PDFs (Elementary, Middle, High School) soon" checked />
+              <div class="option-text">
+                Yes — I will send 2–3 real lesson PDFs (Elementary, Middle, High School) on WhatsApp/Email
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="samplePdfs" value="Use standard placeholder lessons for Month 1 demo; I will upload real PDFs later" />
+              <div class="option-text">
+                Use standard sample English lessons for Month 1; I will upload real PDFs later
+              </div>
+            </label>
+          </div>
+          <div class="callout">
+            <strong>Why this helps:</strong> Testing with 2–3 of your actual lesson PDFs early ensures the AI extracts subtopics and tone in your exact teaching style before fine-tuning your custom school model.
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Billing, Ownership & Pilot -->
+      <section class="section-card">
+        <div class="section-header">
+          <div class="section-num">4</div>
+          <div>
+            <h2>Billing, Ownership &amp; Day 30 Pilot</h2>
+            <p>Keeping all accounts legally owned by your school and launching smoothly.</p>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">12. Which AI API provider(s) are you currently paying for?</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="checkbox" name="currentProviders" value="Google Cloud / Gemini" />
+              <div class="option-text">Google Cloud / Gemini</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="currentProviders" value="OpenAI (ChatGPT API)" />
+              <div class="option-text">OpenAI (ChatGPT API)</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="currentProviders" value="Microsoft Azure" />
+              <div class="option-text">Microsoft Azure</div>
+            </label>
+            <label class="option-item">
+              <input type="checkbox" name="currentProviders" value="Not set up yet / Open to recommendation" />
+              <div class="option-text">Not set up yet / Open to your lowest-cost recommendation</div>
+            </label>
+          </div>
+          <div class="inline-extra">
+            <input type="text" name="otherProvider" placeholder="Other provider or notes about existing billing..." />
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">13. Account Ownership (Google Cloud, Azure Speech, Google Play)</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="ownership" value="Register all cloud & store accounts under the school's email/billing (Recommended)" checked />
+              <div class="option-text">
+                Register all cloud &amp; store accounts under the school's official email &amp; billing <span class="rec-tag">Recommended</span>
+                <span class="option-sub">Guarantees the school owns 100% of the app, student database, and custom-trained AI model.</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="ownership" value="Let's discuss account setup together on a quick call" />
+              <div class="option-text">
+                Let's set up the accounts together on a quick call
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">14. Roughly what devices do your students use?</div>
+          <div class="q-hint">Helps decide whether to launch on Android first and save Apple's $99/yr fee until Month 2.</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="deviceSplit" value="Mostly Android (70%+) — Android first in Month 1, iOS in Month 2 (Recommended)" checked />
+              <div class="option-text">
+                Mostly Android (70%+) — Launch on Android first, add iOS in Month 2 <span class="rec-tag">Saves $99 in Month 1</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="deviceSplit" value="About 50% Android / 50% iPhone" />
+              <div class="option-text">
+                About 50% Android / 50% iPhone
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="deviceSplit" value="Mostly iPhone (70%+)" />
+              <div class="option-text">
+                Mostly iPhone (70%+)
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="q-title">15. Day 30 Pilot Rollout</div>
+          <div class="options-list">
+            <label class="option-item">
+              <input type="radio" name="pilotPlan" value="Yes — test with 1 small pilot class (15-20 students) before full rollout (Recommended)" checked />
+              <div class="option-text">
+                Yes — test with 1 small pilot class (15–20 students) for a week before full school launch <span class="rec-tag">Recommended</span>
+              </div>
+            </label>
+            <label class="option-item">
+              <input type="radio" name="pilotPlan" value="Private demo to Director & Teachers first, then decide rollout" />
+              <div class="option-text">
+                Private demo to Director &amp; Teachers first, then decide rollout
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="question">
+          <label class="field-label" for="extraNotes">Additional Notes, Branding Colors, or Special Requests (Optional)</label>
+          <textarea id="extraNotes" name="extraNotes" placeholder="Anything else you'd like included (e.g., school logo colors, specific CEFR exam focus, target date for French support)..."></textarea>
+        </div>
+      </section>
+
+      <!-- Submit & Send Card -->
+      <section class="submit-card">
+        <h3>Ready to Send Your Answers?</h3>
+        <p>Choose your easiest way below—your answers are formatted automatically with zero signup required.</p>
+        <div class="btn-row">
+          <button type="button" class="btn btn-whatsapp" id="btnWhatsapp">💬 Send via WhatsApp</button>
+          <button type="button" class="btn btn-primary" id="btnEmail">✉️ Send via Email</button>
+          <button type="button" class="btn btn-secondary" id="btnCopy">📋 Copy Answers</button>
+          <button type="button" class="btn btn-secondary" id="btnDownload">⬇️ Download .TXT</button>
+        </div>
+
+        <div id="summaryBox">
+          <label class="field-label" style="margin-bottom: 8px;">Formatted Summary Preview:</label>
+          <textarea id="summaryPreview" readonly></textarea>
+        </div>
+      </section>
+    </form>
+
+    <footer>
+      MERAKI SMARTY — Prepared for Phase 1 Architecture &amp; Cost Optimization
+    </footer>
+  </div>
+
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <script>
+    // =========================================================================
+    // DEVELOPER CONFIG (Optional — fill these in before sharing your link!)
+    // =========================================================================
+    // Example WhatsApp: "213555123456" (country code + number, NO '+' or spaces)
+    const DEVELOPER_WHATSAPP = "213667705253";
+    // Example Email: "your.email@gmail.com"
+    const DEVELOPER_EMAIL = "moudabouacha09@gmail.com";
+    // =========================================================================
+
+    const form = document.getElementById("discoveryForm");
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+    const summaryBox = document.getElementById("summaryBox");
+    const summaryPreview = document.getElementById("summaryPreview");
+    const toast = document.getElementById("toast");
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function getRadio(name) {
+      const el = form.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : "Not selected";
+    }
+
+    function getCheckboxes(name) {
+      const checked = Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(i => i.value);
+      return checked.length ? checked.join(", ") : "None selected";
+    }
+
+    function getText(name, fallback = "Not specified") {
+      const el = form.querySelector(`[name="${name}"]`);
+      return el && el.value.trim() ? el.value.trim() : fallback;
+    }
+
+    function updateProgress() {
+      const radioGroups = [
+        "accountCreation", "classOrg", "audioRetention", "testRule",
+        "retakePolicy", "beginnerHints", "lessonAccess", "weeklyQuota",
+        "samplePdfs", "ownership", "deviceSplit", "pilotPlan"
+      ];
+      let answered = 0;
+      radioGroups.forEach(name => {
+        if (form.querySelector(`input[name="${name}"]:checked`)) answered++;
+      });
+      if (form.querySelectorAll('input[name="ageGroups"]:checked').length > 0) answered++;
+      if (form.querySelectorAll('input[name="reportFormat"]:checked').length > 0) answered++;
+      if (
+        form.querySelectorAll('input[name="currentProviders"]:checked').length > 0 ||
+        getText("otherProvider", "") !== ""
+      ) {
+        answered++;
+      }
+
+      const total = 15;
+      const pct = Math.round((answered / total) * 100);
+      progressFill.style.width = pct + "%";
+      progressText.textContent = `${answered} / ${total} answered`;
+    }
+
+    function buildSummary() {
+      const customRule = getText("testRuleCustom", "");
+      const otherProv = getText("otherProvider", "");
+      const extraNotes = getText("extraNotes", "None");
+
+      const lines = [
+        "=== MERAKI SMARTY — DIRECTOR DISCOVERY ANSWERS ===",
+        `Date: ${new Date().toLocaleDateString()}`,
+        `School Name: ${getText("schoolName")}`,
+        `Approx. Active Students: ${getText("studentCount")}`,
+        "",
+        "--- 1. ACCOUNTS, CLASSES & PRIVACY ---",
+        `1. Account Creation: ${getRadio("accountCreation")}`,
+        `2. Class Organization: ${getRadio("classOrg")}`,
+        `3. Voice Audio Privacy: ${getRadio("audioRetention")}`,
+        `4. Student Age Groups: ${getCheckboxes("ageGroups")}`,
+        "",
+        "--- 2. TASK 1: ADAPTIVE PLACEMENT TEST (A1-C2) ---",
+        `5. Stopping Rule: ${getRadio("testRule")}${customRule ? " | Custom: " + customRule : ""}`,
+        `6. Retake Policy: ${getRadio("retakePolicy")}`,
+        `7. Report Delivery: ${getCheckboxes("reportFormat")}`,
+        "",
+        "--- 3. TASK 2: PDF ROLE-PLAY TUTOR ---",
+        `8. Beginner Explanation Language: ${getRadio("beginnerHints")}`,
+        `9. Lesson Visibility: ${getRadio("lessonAccess")}`,
+        `10. Weekly Quota per Student: ${getRadio("weeklyQuota")}`,
+        `11. Sample Lesson PDFs: ${getRadio("samplePdfs")}`,
+        "",
+        "--- 4. BILLING, OWNERSHIP & PILOT ---",
+        `12. Current AI Providers: ${getCheckboxes("currentProviders")}${otherProv ? " | Other: " + otherProv : ""}`,
+        `13. Account Ownership: ${getRadio("ownership")}`,
+        `14. Student Device Split: ${getRadio("deviceSplit")}`,
+        `15. Day 30 Pilot Plan: ${getRadio("pilotPlan")}`,
+        "",
+        `Additional Notes: ${extraNotes}`
+      ];
+
+      const text = lines.join("\n");
+      summaryPreview.value = text;
+      summaryBox.style.display = "block";
+      return text;
+    }
+
+    document.getElementById("btnWhatsapp").addEventListener("click", () => {
+      const text = buildSummary();
+      const encoded = encodeURIComponent(text);
+      const base = DEVELOPER_WHATSAPP ? `https://wa.me/${DEVELOPER_WHATSAPP}` : "https://wa.me/";
+      window.open(`${base}?text=${encoded}`, "_blank");
+      showToast("Opening WhatsApp with your answers...");
+    });
+
+    document.getElementById("btnEmail").addEventListener("click", () => {
+      const text = buildSummary();
+      const subject = encodeURIComponent("MERAKI SMARTY — Phase 1 Discovery Answers");
+      const body = encodeURIComponent(text);
+      window.location.href = `mailto:${DEVELOPER_EMAIL}?subject=${subject}&body=${body}`;
+      showToast("Opening email client...");
+    });
+
+    document.getElementById("btnCopy").addEventListener("click", async () => {
+      const text = buildSummary();
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Answers copied! Paste into WhatsApp or Email.");
+      } catch (err) {
+        summaryPreview.select();
+        document.execCommand("copy");
+        showToast("Answers copied!");
+      }
+    });
+
+    document.getElementById("btnDownload").addEventListener("click", () => {
+      const text = buildSummary();
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "MERAKI_SMARTY_Director_Answers.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Downloaded MERAKI_SMARTY_Director_Answers.txt");
+    });
+
+    form.addEventListener("input", updateProgress);
+    form.addEventListener("change", updateProgress);
+    updateProgress();
+  </script>
+</body>
+</html>
